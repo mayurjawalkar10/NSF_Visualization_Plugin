@@ -1,0 +1,31 @@
+<idea-plugin>
+    <id>NSF_Visualization</id>
+    <name>Assignment Visualization</name>
+    <vendor email="mj8628@rit.edu" url="https://github.com/mayurjawalkar10/">RIT_NSF</vendor>
+
+    <description>
+        This project helps faculties to visualize students assignments and provides an efficient mean
+        to propagate the feedback.
+    </description>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+        <toolWindow id="VisualizationToolWindowFactory"
+                    anchor="bottom"
+                    factoryClass="VisualizationToolWindowFactory">
+        </toolWindow>
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+        <action class="HighlightClusters" id="HighlightClusters" text="Highlight">
+            <add-to-group group-id="ToolbarRunGroup"/>
+            <add-to-group group-id="XDebugger.ToolWindow.LeftToolbar"/>
+        </action>
+
+    </actions>
+</idea-plugin>
