@@ -12,7 +12,9 @@ public class ColorButtonListener implements ActionListener {
         this.colorButton = colorButton;
         this.clusterID = clusterID;
         HighlightClusters.clusterColorMap.put(clusterID, Color.BLUE);
-        colorButton.setForeground(JBColor.BLUE);
+        Color textColor = getTextColor(Color.BLUE);
+        colorButton.setForeground(textColor);
+        colorButton.setBackground(JBColor.BLUE);
     }
 
     @Override
@@ -20,7 +22,13 @@ public class ColorButtonListener implements ActionListener {
         hlt_color = JColorChooser.showDialog(null, "Select Highlight Color", Color.BLUE);
         hlt_color = (hlt_color == null) ? Color.BLUE : hlt_color;
         System.out.println(hlt_color.toString());
-        colorButton.setForeground(hlt_color);
+        Color textColor = getTextColor(hlt_color);
+        colorButton.setForeground(textColor);
+        colorButton.setBackground(hlt_color);
         HighlightClusters.clusterColorMap.put(clusterID, hlt_color);
+    }
+
+    public static Color getTextColor(Color color){
+        return ((color.getBlue()+color.getGreen()+color.getRed())/(3.0*255)) > 0.5 ? Color.BLACK : Color.WHITE;
     }
 }

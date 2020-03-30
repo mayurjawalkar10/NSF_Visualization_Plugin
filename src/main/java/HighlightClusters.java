@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 
@@ -24,6 +25,7 @@ public class HighlightClusters extends AnAction {
     boolean firstClickFlag;
     static HashMap<String, Color> clusterColorMap = new HashMap<>();
     static HashSet<String> selectedClusterList = new HashSet<>();
+    static HashMap<String, JTextField> clusterSemanticLabel = new HashMap<>();
 
     public HighlightClusters() {
         firstClickFlag = true;
@@ -103,8 +105,8 @@ public class HighlightClusters extends AnAction {
                 TextAttributes textAttributes = new TextAttributes(JBColor.BLACK, JBColor.WHITE, clusterColorMap.get(cluster),
                         EffectType.BOLD_LINE_UNDERSCORE, Font.BOLD);
 
-                RangeHighlighter hlt = markupModel.addRangeHighlighter((line_start_offset+start_offset),
-                        (line_end_offset+end_offset), HighlighterLayer.ADDITIONAL_SYNTAX,
+                RangeHighlighter hlt = markupModel.addRangeHighlighter((line_start_offset+start_offset-1),
+                        (line_end_offset+end_offset-1), HighlighterLayer.ADDITIONAL_SYNTAX,
                         textAttributes, HighlighterTargetArea.EXACT_RANGE);
             }
         }

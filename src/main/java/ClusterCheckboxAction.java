@@ -15,6 +15,7 @@ public class ClusterCheckboxAction extends AbstractAction {
             System.out.println(clusterCB.getText()+ " selected");
             colorButton.setEnabled(true);
             HighlightClusters.selectedClusterList.add(clusterCB.getText());
+            System.out.println(clusterCB.getSize());
         } else {
             colorButton.setEnabled(false);
             System.out.println(clusterCB.getText()+ " not selected");
