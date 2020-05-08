@@ -36,7 +36,10 @@ public class VisualizationToolWindow {
 //            semanticLabelText.addActionListener(new TextFieldAction("Cluster_"+clusterIdx, semanticLabelText));
             setSize(semanticLabelText, 200, 23);
 //            semanticLabelText.setEnabled(false);
-            HighlightClusters.clusterSemanticLabel.put("Cluster_"+clusterIdx, semanticLabelText);
+            if (HighlightClusters.clusterSemanticLabels.containsKey("Cluster_"+clusterIdx)){
+                semanticLabelText.setText(HighlightClusters.clusterSemanticLabels.get("Cluster_"+clusterIdx));
+            }
+            HighlightClusters.clusterSemanticLabelTextBoxes.put("Cluster_"+clusterIdx, semanticLabelText);
 
             rowPanel.add(checkButton);
             rowPanel.add(semanticLabelText);
@@ -49,11 +52,11 @@ public class VisualizationToolWindow {
         updateLabels.addActionListener(new UpdateLabelButtonAction());
         updateLabels.setVisible(true);
 
-
         buttonPanel.setVisible(true);
         scrollPane.setVisible(true);
         windowPanel.add(scrollPane);
         windowPanel.add(updateLabels, Component.LEFT_ALIGNMENT);
+        windowPanel.updateUI();
     }
 
     public void setSize(Component component, int width, int height){

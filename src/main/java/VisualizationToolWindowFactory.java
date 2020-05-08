@@ -7,18 +7,24 @@ import org.jetbrains.annotations.NotNull;
 
 public class VisualizationToolWindowFactory implements ToolWindowFactory {
     public static VisualizationToolWindow visualizeToolWindow;
+    public static FileSearchVisualizationToolWindow fileSearchVisualizationToolWindow;
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         try {
             visualizeToolWindow = new VisualizationToolWindow(toolWindow);
+            fileSearchVisualizationToolWindow = new FileSearchVisualizationToolWindow(toolWindow);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
-        Content content = contentFactory.createContent(visualizeToolWindow.getContent(),
+        Content highlightClustersContent = contentFactory.createContent(visualizeToolWindow.getContent(),
                 "Cluster View", false);
-        toolWindow.getContentManager().addContent(content);
+        toolWindow.getContentManager().addContent(highlightClustersContent);
+
+        Content searchFileForClustersContent = contentFactory.createContent(fileSearchVisualizationToolWindow.getContent(),
+                "Search File for Clusters", false);
+        toolWindow.getContentManager().addContent(searchFileForClustersContent);
     }
 }

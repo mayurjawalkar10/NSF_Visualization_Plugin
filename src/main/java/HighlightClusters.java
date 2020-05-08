@@ -14,9 +14,12 @@ import com.intellij.ui.JBColor;
 import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
 import javax.swing.*;
 import java.awt.*;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class HighlightClusters extends AnAction {
@@ -25,21 +28,21 @@ public class HighlightClusters extends AnAction {
     boolean firstClickFlag;
     static HashMap<String, Color> clusterColorMap = new HashMap<>();
     static HashSet<String> selectedClusterList = new HashSet<>();
-    static HashMap<String, JTextField> clusterSemanticLabel = new HashMap<>();
+    static HashMap<String, JTextField> clusterSemanticLabelTextBoxes = new HashMap<>();
+    static HashMap<String, String> clusterSemanticLabels = new HashMap<>();
+    static String serialized_filename = "";
 
     public HighlightClusters() {
         firstClickFlag = true;
     }
 
-    public void readFiles(String text) throws Exception{
+    public static void readFiles(String text) throws Exception{
         Object parsingObj = new JSONParser().parse(text);
         JSONObject jsonObj = (JSONObject) parsingObj;
         long total_clusters = (long) jsonObj.get("total_clusters");
         clusterCount = (int) total_clusters;
         fileClusterMap = (Map) jsonObj.get("details");
-//        System.out.println(1 +", " +clusterCount);
-//        System.out.println(2 +", " +fileClusterMap);
-        VisualizationToolWindowFactory.visualizeToolWindow.addClusterButtons(clusterCount);
+        System.out.println("Reading File");
     }
 
     @Override
@@ -52,19 +55,35 @@ public class HighlightClusters extends AnAction {
         }
 
         if (firstClickFlag) {
+            Path projectPath = Paths.get(Objects.requireNonNull(project.getBasePath()));
+            Path ser_file_path = projectPath.resolve("semanticLabels.ser");
+            serialized_filename = ser_file_path.toString();
+
+            try {
+                FileInputStream fis = new FileInputStream(serialized_filename);
+                ObjectInputStream ois = new ObjectInputStream(fis);
+                clusterSemanticLabels = (HashMap<String, String>) ois.readObject();
+            }
+            catch(Exception exp){
+                System.out.println("No serialized object provided. Initializing the cluster labels to empty strings");
+                System.out.println("Printing ");
+                System.out.println(clusterSemanticLabels);
+            }
+
             PsiFile[] file = FilenameIndex.getFilesByName(project, "exp1-cs-BUYING2-0.9.json",
                     GlobalSearchScope.allScope(e.getProject()));
             System.out.println(file[0].getName());
-//            System.out.println(file[0].getText());
-
             String fileText = file[0].getText();
 
             try {
-                readFiles(fileText);
+                if (fileClusterMap == null) {
+                    System.out.println("Reading from HighlightClusters");
+                    readFiles(fileText);
+                }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-
+            VisualizationToolWindowFactory.visualizeToolWindow.addClusterButtons(clusterCount);
             firstClickFlag = false;
         }
 
@@ -82,26 +101,30 @@ public class HighlightClusters extends AnAction {
         if (file != null) {
             Map cluster_offset_map = (Map) fileClusterMap.get(file.getName());
             Set clusterList = cluster_offset_map.keySet();
-//            System.out.println(3 +", " +cluster_offset_map);
             Set commonClusters = Sets.intersection(clusterList, HighlightClusters.selectedClusterList);
             System.out.println(commonClusters);
 
             for (Object cluster : commonClusters) {
-//                System.out.println(cluster);
                 String line_offsets = (String) cluster_offset_map.get((String) cluster);
-                String[] offset_list = line_offsets.split("--", 2); //  splits string into start and end offset
+                //  splits string into start and end offset
+                String[] offset_list = line_offsets.split("--", 2);
 
                 String[] start_offset_details = offset_list[0].split(":", 2);
                 int start_line_num = Integer.parseInt(start_offset_details[0]);
-                int line_start_offset = doc.getLineStartOffset(start_line_num-1); //indices are zero based, so -1.
+
+                //indices are zero based, so -1.
+                int line_start_offset = doc.getLineStartOffset(start_line_num-1);
                 int start_offset = Integer.parseInt(start_offset_details[1]);
 
                 String[] end_offset_details = offset_list[1].split(":", 2);
                 int end_line_num = Integer.parseInt(end_offset_details[0]);
-                int line_end_offset = doc.getLineStartOffset(end_line_num-1); //indices are zero based, so -1.
+                //indices are zero based, so -1.
+                int line_end_offset = doc.getLineStartOffset(end_line_num-1);
                 int end_offset = Integer.parseInt(end_offset_details[1]);
-//                System.out.println(start_line_num+", "+line_start_offset+", "+start_offset+", "+end_line_num+", "+line_end_offset+", "+end_offset);
-
+//              System.out.println(start_line_num+", "+line_start_offset+", "+start_offset+", "+
+//                                 end_line_num+", "+line_end_offset+", "+end_offset);
+                System.out.println(clusterColorMap);
+                System.out.println(cluster);
                 TextAttributes textAttributes = new TextAttributes(JBColor.BLACK, JBColor.WHITE, clusterColorMap.get(cluster),
                         EffectType.BOLD_LINE_UNDERSCORE, Font.BOLD);
 
