@@ -19,11 +19,8 @@ public class VisualizationToolWindow {
 
         for (int clusterIdx = 0; clusterIdx < clusterCount; clusterIdx++){
             JPanel rowPanel = new JPanel();
-//            FlowLayout layout = new FlowLayout();
             rowPanel.setLayout(new BoxLayout(rowPanel, BoxLayout.X_AXIS));
-//            layout.setHgap(10);
             setSize(rowPanel, 2000, 25);
-//            System.out.println(rowPanel.getSize());
             JButton colorButton = new JButton("Color");
             setSize(colorButton, 50, 20);
             colorButton.addActionListener(new ColorButtonListener("Cluster_"+clusterIdx, colorButton));
@@ -33,12 +30,11 @@ public class VisualizationToolWindow {
             setSize(checkButton, 100, 20);
 
             JTextField semanticLabelText = new JTextField();
-//            semanticLabelText.addActionListener(new TextFieldAction("Cluster_"+clusterIdx, semanticLabelText));
             setSize(semanticLabelText, 200, 23);
-//            semanticLabelText.setEnabled(false);
             if (HighlightClusters.clusterSemanticLabels.containsKey("Cluster_"+clusterIdx)){
                 semanticLabelText.setText(HighlightClusters.clusterSemanticLabels.get("Cluster_"+clusterIdx));
             }
+
             HighlightClusters.clusterSemanticLabelTextBoxes.put("Cluster_"+clusterIdx, semanticLabelText);
 
             rowPanel.add(checkButton);
@@ -51,7 +47,6 @@ public class VisualizationToolWindow {
         JButton updateLabels = new JButton("Update Semantic Labels");
         updateLabels.addActionListener(new UpdateLabelButtonAction());
         updateLabels.setVisible(true);
-
         buttonPanel.setVisible(true);
         scrollPane.setVisible(true);
         windowPanel.add(scrollPane);
