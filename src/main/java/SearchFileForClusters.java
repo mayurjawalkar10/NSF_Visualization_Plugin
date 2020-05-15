@@ -1,6 +1,7 @@
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -49,11 +50,25 @@ public class SearchFileForClusters extends AnAction {
                 System.out.println(HighlightClusters.clusterSemanticLabels);
             }
 
-            PsiFile[] file = FilenameIndex.getFilesByName(project, "exp1-cs-BUYING2-0.9.json",
+            PsiFile[] files = FilenameIndex.getFilesByName(project, "clusters.json",
                     GlobalSearchScope.allScope(e.getProject()));
-            System.out.println(file[0].getName());
 
-            String fileText = file[0].getText();
+            PsiFile considered_cluster_json = null;
+
+            for( PsiFile each_file : files){
+                PsiDirectory parent = each_file.getParent();
+                if(parent != null && parent.getName().equals("Clusters_Json")){
+                    considered_cluster_json = each_file;
+                    break;
+                }
+            }
+            considered_cluster_json = files[0];
+            if( considered_cluster_json == null){
+                return;
+            }
+
+            System.out.println(considered_cluster_json.getName());
+            String fileText = considered_cluster_json.getText();
 
             try {
                 if (HighlightClusters.fileClusterMap == null) {
